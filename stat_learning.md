@@ -123,3 +123,63 @@ lasso_cv |>
 ```
 
 <img src="stat_learning_files/figure-gfm/unnamed-chunk-7-1.png" width="90%" />
+
+Do lasso with the right lambda.
+
+``` r
+lasso_fit = 
+    glmnet(x = x, y = y, lambda = lambda_opt)
+```
+
+## Clustering
+
+Look at pokemon!
+
+``` r
+pokemon_df = 
+    read_csv("data/pokemon.csv") |> 
+    janitor::clean_names() |> 
+    select(hp, speed)
+```
+
+    ## Rows: 800 Columns: 13
+    ## ── Column specification ────────────────────────────────────────────────────────
+    ## Delimiter: ","
+    ## chr (3): Name, Type 1, Type 2
+    ## dbl (9): #, Total, HP, Attack, Defense, Sp. Atk, Sp. Def, Speed, Generation
+    ## lgl (1): Legendary
+    ## 
+    ## ℹ Use `spec()` to retrieve the full column specification for this data.
+    ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+``` r
+pokemon_df |> 
+    ggplot(aes(x = hp, y = speed)) + 
+    geom_point()
+```
+
+<img src="stat_learning_files/figure-gfm/unnamed-chunk-10-1.png" width="90%" />
+
+Fit kmeans clustering to this dataset.
+
+``` r
+kmeans_fit = 
+    kmeans(x = pokemon_df, centers = 3)
+```
+
+Use `broom` to get nice results.
+
+``` r
+pokemon_df = 
+    broom::augment(kmeans_fit, pokemon_df)
+```
+
+Look at results!
+
+``` r
+pokemon_df |> 
+    ggplot(aes(x = hp, y = speed, color = .cluster)) + 
+    geom_point()
+```
+
+<img src="stat_learning_files/figure-gfm/unnamed-chunk-13-1.png" width="90%" />
